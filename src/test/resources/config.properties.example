@@ -1,0 +1,17 @@
+# Application URL
+app.url=https://test.fieldforceconnect.com/
+
+# Browser Configuration (chrome, edge, firefox)
+browser=chrome
+
+# Headless mode (true/false)
+headless=false
+
+# Timeouts in seconds
+implicit.wait=10
+explicit.wait=15
+
+# Test Credentials (can also be overridden by environment variables: TEST_USERNAME, TEST_PASSWORD)
+valid.username=your_username_here@example.com
+valid.password=YourPasswordHere123
+

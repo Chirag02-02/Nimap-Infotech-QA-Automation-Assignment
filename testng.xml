@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Nimap_QA_Automation_Suite" verbose="1">
+
+    <test name="Task1_LoginAutomation">
+        <classes>
+            <class name="tests.LoginTest" />
+        </classes>
+    </test>
+
+    <test name="Task2_PunchInVerification">
+        <classes>
+            <class name="tests.PunchInTest" />
+        </classes>
+    </test>
+
+    <test name="Task3_AddCustomerAutomation">
+        <classes>
+            <class name="tests.AddCustomerTest" />
+        </classes>
+    </test>
+
+</suite>

@@ -1,0 +1,39 @@
+# Compiled class files
+target/
+*.class
+
+# Log files
+*.log
+
+# TestNG outputs
+test-output/
+test-output-custom/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# VS Code
+.vscode/
+
+# OS generated files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Sensitive configuration files containing private credentials
+src/test/resources/config.properties
+!src/test/resources/config.properties.example
+
+# Temporary files
+temp/
+screenshots/*.png
+
