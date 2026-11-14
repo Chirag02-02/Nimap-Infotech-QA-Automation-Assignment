@@ -1,0 +1,370 @@
+{
+  "info": {
+    "_postman_id": "a9b7e3f1-4321-4f1a-b620-7f9a8b1c2d3e",
+    "name": "Field Force Connect - API Testing",
+    "description": "API Test Suite for Field Force Connect - Nimap Infotech QA Assessment.\nCovers Authentication and Customer Management with assertions, dynamic token handling, and environment configuration.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Authentication",
+      "description": "Endpoints relating to user authentication and session validation.",
+      "item": [
+        {
+          "name": "Login - Valid Credentials",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response time is below 2000ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});",
+                  "",
+                  "pm.test(\"Verify login succeeds and returns user profile\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "    pm.expect(jsonData.userId).to.be.a(\"number\");",
+                  "    pm.expect(jsonData.userDetail).to.be.an(\"object\");",
+                  "    pm.expect(jsonData.roles).to.be.an(\"object\");",
+                  "});",
+                  "",
+                  "pm.test(\"Dynamically extract and set auth_token in environment\", function () {",
+                  "    var username = pm.environment.get(\"username\");",
+                  "    var password = pm.environment.get(\"password\");",
+                  "    var basicToken = \"Basic \" + btoa(username + \":\" + password);",
+                  "    pm.environment.set(\"auth_token\", basicToken);",
+                  "    pm.expect(pm.environment.get(\"auth_token\")).to.not.be.empty;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/plain, */*"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}api/account/authenticate",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "account",
+                "authenticate"
+              ]
+            },
+            "description": "Authenticates valid user and sets session token dynamically in environment."
+          },
+          "response": []
+        },
+        {
+          "name": "Login - Invalid Credentials",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK (Handled application response)\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Verify authentication is rejected for invalid credentials\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(false);",
+                  "    pm.expect(jsonData.userId).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Verify no session token or permissions are issued\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.Permissions).to.be.undefined;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/plain, */*"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"invalid_user_qa@testmail.com\",\n  \"password\": \"WrongPassword@999\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}api/account/authenticate",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "account",
+                "authenticate"
+              ]
+            },
+            "description": "Attempts authentication with invalid credentials. Verifies rejection."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Customer Management",
+      "description": "Customer module operations including status listing, paginated fetch, and customer creation.",
+      "item": [
+        {
+          "name": "GET Customers - Status List",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Customer Status API returns success status and data array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.Status).to.eql(200);",
+                  "    pm.expect(jsonData.Message).to.eql(\"Success\");",
+                  "    pm.expect(jsonData.data).to.be.an(\"array\");",
+                  "    pm.expect(jsonData.data.length).to.be.above(0);",
+                  "});",
+                  "",
+                  "pm.test(\"Validate required customer status categories exist\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    var statuses = jsonData.data.map(function(s) { return s.Status; });",
+                  "    pm.expect(statuses).to.include.members([\"Hot\", \"Warm\", \"Cold\"]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/plain, */*"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}api/CRM/LeadStatus",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "CRM",
+                "LeadStatus"
+              ]
+            },
+            "description": "Retrieves the configured customer lifecycle statuses (Hot, Warm, Cold, etc.)."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Customer By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Customer record details structure is valid\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.Status).to.eql(200);",
+                  "    pm.expect(jsonData.data).to.be.an(\"object\");",
+                  "    pm.expect(jsonData.data.Id).to.be.a(\"number\");",
+                  "    pm.expect(jsonData.data.LeadName).to.be.a(\"string\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/plain, */*"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}api/CRM/LeadWithProduct?leadId=4708",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "CRM",
+                "LeadWithProduct"
+              ],
+              "query": [
+                {
+                  "key": "leadId",
+                  "value": "4708"
+                }
+              ]
+            },
+            "description": "Retrieves comprehensive customer profile data by specific lead ID."
+          },
+          "response": []
+        },
+        {
+          "name": "POST Customer List (Paged View)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Customer records list retrieved successfully\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.Status).to.eql(200);",
+                  "    pm.expect(jsonData.data.TotalRecords).to.be.a(\"number\");",
+                  "    pm.expect(jsonData.data.Leads).to.be.an(\"array\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/plain, */*"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"from\": 1,\n  \"to\": 10\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}api/CRM/Leads",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "CRM",
+                "Leads"
+              ]
+            },
+            "description": "Retrieves paginated list of existing customers."
+          },
+          "response": []
+        },
+        {
+          "name": "Add Customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Verify customer creation response status and message\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.Status).to.eql(200);",
+                  "    pm.expect(jsonData.Message).to.include(\"Success\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/plain, */*"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"LeadName\": \"Nimap QA Customer {{$timestamp}}\",\n  \"PersonName\": \"Chirag QA\",\n  \"MobileNo\": \"9820012345\",\n  \"Email\": \"chirag.qa@example.com\",\n  \"Address\": \"Mumbai, Maharashtra\",\n  \"StatusId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}api/CRM/Lead",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "CRM",
+                "Lead"
+              ]
+            },
+            "description": "Creates a new customer record with unique test data."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
