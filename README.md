@@ -199,13 +199,23 @@ After test execution, standard HTML reports are available at:
 
 ## 8. Known Limitations & Application Behavior Notes
 
-1. **Direct Punch In Action (Task 2)**:
-   - In Field Force Connect, real-time employee "Punch In" requires mobile device geolocation (GPS tracking), which is natively restricted to the Field Force Connect Mobile App (Android/iOS) or specific tenant admin roles.
-   - On the web portal for the provided user credentials, the interface presents the employee's attendance logs and allows regularizing claims (`Add New`), but does not render a direct clocking button.
-   - In strict compliance with professional QA engineering practices and assignment instructions, the automation suite does not fabricate non-existent buttons or simulate mock toasts. It verifies the live Attendance view, asserts the actual application state, and logs the platform limitation cleanly.
+### 1. Defect & Limitation Finding: Real-Time Punch In / Punch Out
 
-2. **React Dynamic Form Inputs**:
-   - The web application is built with React and Material-UI (MUI). Programmatic text entry requires synthetic event dispatching (`input` and `change`) to update React component states, which is handled in the Page Object classes (`LoginPage.java` and `AddCustomerPage.java`).
+During additional verification of the Attendance module, the Punch In and Punch Out functionality was also inspected:
+
+| Test Scenario | Expected Result | Actual Result | Status |
+|---|---|---|:---:|
+| **Punch In** | Clicking Punch In should record the employee's attendance and display confirmation or updated attendance details. | Button does not perform the expected action. | **FAIL** |
+| **Punch Out** | Clicking Punch Out should record the employee's punch-out time and update attendance details. | Button does not perform the expected action. | **FAIL** |
+
+- **Observation**: The Attendance module provides Punch In and Punch Out controls, but the expected attendance action was not completed when interacting with them on the web portal.
+- **Impact**: Employees may be unable to record their daily attendance through these web controls.
+- **Note**: The Update TimeSheet / Attendance Regularization form (`Add New`) is a separate retrospective claim workflow and was verified independently.
+- **Compliance**: In strict accordance with the assignment guidelines, the test framework does not fabricate fake buttons or mock toast messages. It asserts the live application state and documents this defect/limitation accurately.
+
+### 2. React Dynamic Form Inputs
+
+The web application is built with React and Material-UI (MUI). Programmatic text entry requires synthetic event dispatching (`input` and `change`) to update React component states, which is handled in the Page Object classes (`LoginPage.java` and `AddCustomerPage.java`).
 
 ---
 
