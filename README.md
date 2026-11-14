@@ -205,8 +205,9 @@ During additional verification of the Attendance module, the Punch In and Punch 
 
 | Test Scenario | Expected Result | Actual Result | Status |
 |---|---|---|:---:|
-| **Punch In** | Clicking Punch In should record the employee's attendance and display confirmation or updated attendance details. | Button does not perform the expected action. | **FAIL** |
-| **Punch Out** | Clicking Punch Out should record the employee's punch-out time and update attendance details. | Button does not perform the expected action. | **FAIL** |
+| **Punch In** | Records employee's starting attendance time | Control clicked; no punch-in time recorded, status remained 'Waiting for punch in' | **FAIL** |
+| **Punch Out** | Records employee's ending attendance time | Control clicked; no punch-out time recorded, status remained 'Waiting for punch in' | **FAIL** |
+| **Attendance status** | Updates according to punch actions | Status remained unchanged at 'Waiting for punch in'; metric counts remained at 0 | **FAIL** |
 
 - **Observation**: The Attendance module provides Punch In and Punch Out controls, but the expected attendance action was not completed when interacting with them on the web portal.
 - **Impact**: Employees may be unable to record their daily attendance through these web controls.
