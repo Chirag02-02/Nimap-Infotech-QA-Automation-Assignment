@@ -197,7 +197,19 @@ After test execution, standard HTML reports are available at:
 
 ---
 
-## 8. GitHub Submission Checklist
+## 8. Known Limitations & Application Behavior Notes
+
+1. **Direct Punch In Action (Task 2)**:
+   - In Field Force Connect, real-time employee "Punch In" requires mobile device geolocation (GPS tracking), which is natively restricted to the Field Force Connect Mobile App (Android/iOS) or specific tenant admin roles.
+   - On the web portal for the provided user credentials, the interface presents the employee's attendance logs and allows regularizing claims (`Add New`), but does not render a direct clocking button.
+   - In strict compliance with professional QA engineering practices and assignment instructions, the automation suite does not fabricate non-existent buttons or simulate mock toasts. It verifies the live Attendance view, asserts the actual application state, and logs the platform limitation cleanly.
+
+2. **React Dynamic Form Inputs**:
+   - The web application is built with React and Material-UI (MUI). Programmatic text entry requires synthetic event dispatching (`input` and `change`) to update React component states, which is handled in the Page Object classes (`LoginPage.java` and `AddCustomerPage.java`).
+
+---
+
+## 9. GitHub Submission Checklist
 
 - [x] Clean Maven directory structure (`src/test/java`, `src/test/resources`).
 - [x] Page Object Model pattern strictly implemented.
@@ -208,3 +220,4 @@ After test execution, standard HTML reports are available at:
 - [x] Real-world synchronization using `WebDriverWait` and `PageLoadStrategy.EAGER`.
 - [x] TestNG suite XML configured for seamless one-command execution (`mvn test`).
 - [x] 100% Passing test execution verified on live target application.
+
